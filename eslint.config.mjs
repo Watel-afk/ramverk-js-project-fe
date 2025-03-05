@@ -28,7 +28,12 @@ const eslintConfig = [
       "unused-imports": unusedImports,
     },
     rules: {
-      "prettier/prettier": "warn",
+      "prettier/prettier": [
+        "error",
+        {
+          endOfLine: "auto",
+        },
+      ],
       // "no-unused-vars": ["error", { args: "none", ignoreRestSiblings: true }], // Error on unused vars, but allow unused args
       // "no-unused-imports/no-unused-imports": "error", // Error on unused imports
       "no-multiple-empty-lines": ["warn", { max: 1 }], // Max 1 empty line

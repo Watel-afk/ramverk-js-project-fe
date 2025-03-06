@@ -5,6 +5,7 @@ import { Roboto } from "next/font/google";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../theme/theme";
 import ClientLayout from "./clientLayout";
+import isLoggedIn from "@/features/login/utils/isLoggedIn";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -23,11 +24,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const loggedIn = isLoggedIn();
+
   return (
     <html lang="en">
       <body className={roboto.variable}>
         <AppRouterCacheProvider>
-          <ClientLayout />
+          <ClientLayout isLoggedInPromise={loggedIn} />
           <ThemeProvider theme={theme}> {children} </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

@@ -1,22 +1,38 @@
-import { useEffect } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import useLogin from "@/features/login/hooks/useLogin";
 import { PAGES, UNPROTECTED_PATHS } from "@/utils/pages";
 
-const ClientLayout = () => {
-  const { isLoading, loggedIn } = useLogin();
+const ClientLayout = ({
+  isLoggedInPromise,
+}: {
+  isLoggedInPromise: Promise<boolean>;
+}) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const isLoggedIn = async () => {
+      setIsLoading(true);
+      const isLoggedIn = await isLoggedInPromise;
+      setIsLoading(false);
+      setIsLoggedIn(isLoggedIn);
+    };
+
+    isLoggedIn();
+  }, [isLoggedInPromise, pathname, router]);
 
   useEffect(() => {
     if (isLoading) {
       return;
     }
 
-    if (!loggedIn && !UNPROTECTED_PATHS.includes(pathname)) {
+    if (!isLoggedIn && !UNPROTECTED_PATHS.includes(pathname)) {
       router.push(PAGES.LOGIN);
     }
-  }, [isLoading, loggedIn, pathname, router]);
+  }, [isLoading, isLoggedIn, pathname, router]);
 
   return <></>;
 };

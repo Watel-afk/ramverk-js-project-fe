@@ -2,37 +2,25 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { PAGES, UNPROTECTED_PATHS } from "@/utils/pages";
+import { useCookies } from "next-client-cookies";
+import { SESSION_ID } from "@/features/cookies/constants";
 
-const ClientLayout = ({
-  isLoggedInPromise,
-}: {
-  isLoggedInPromise: Promise<boolean>;
-}) => {
+const ClientLayout = ({ isLoggedInOnLoad }: { isLoggedInOnLoad: boolean }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(isLoggedInOnLoad);
+  const cookies = useCookies();
 
   useEffect(() => {
-    const isLoggedIn = async () => {
-      setIsLoading(true);
-      const isLoggedIn = await isLoggedInPromise;
-      setIsLoading(false);
-      setIsLoggedIn(isLoggedIn);
-    };
-
-    isLoggedIn();
-  }, [isLoggedInPromise, pathname, router]);
+    const sessionId = cookies.get(SESSION_ID);
+    setIsLoggedIn(!!sessionId);
+  }, [cookies]);
 
   useEffect(() => {
-    if (isLoading) {
-      return;
-    }
-
     if (!isLoggedIn && !UNPROTECTED_PATHS.includes(pathname)) {
       router.push(PAGES.LOGIN);
     }
-  }, [isLoading, isLoggedIn, pathname, router]);
+  }, [isLoggedIn, pathname, router]);
 
   return <></>;
 };

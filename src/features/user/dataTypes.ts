@@ -4,6 +4,10 @@ export type RegisterUserRequest = {
   confirmNewPassword: string;
 };
 
+export type AddBalanceRequest = {
+  balanceToAdd: number;
+};
+
 export type UserResponse = {
   user: User;
 };

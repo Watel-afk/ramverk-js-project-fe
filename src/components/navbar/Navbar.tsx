@@ -63,9 +63,10 @@ const Navbar = () => {
   const navigate = useCallback(
     (address: string) => {
       handleCloseNavMenu();
+      handleCloseUserMenu();
       router.push(address);
     },
-    [router, handleCloseNavMenu]
+    [router, handleCloseNavMenu, handleCloseUserMenu]
   );
 
   const handleLogout = useCallback(async () => {

@@ -1,25 +1,22 @@
 import { useState } from "react";
-import { LoginRequest, LoginResponse } from "../datatypes";
-import { login } from "../requests";
 import { ErrorResponse } from "@/features/request/dataTypes";
 import { useSnackbar } from "@/components/snackbar/SnackbarProvider";
 import { ERROR_MESSAGES } from "@/features/utils/constants";
+import { RegisterUserRequest } from "../dataTypes";
+import { registerUser } from "../requests";
 
-export const useLogin = () => {
+export const useRegisterUser = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { addErrorMessage } = useSnackbar();
 
-  const doLogin = async (body: LoginRequest) => {
+  const doRegisterUser = async (body: RegisterUserRequest) => {
     setIsLoading(true);
 
-    const response = await login({ body });
+    const response = await registerUser({ body });
 
-    let loginResponse = undefined;
     let errorResponse = undefined;
 
-    if (response.status === 200) {
-      loginResponse = (await response.json()) as LoginResponse;
-    } else {
+    if (response.status !== 200) {
       try {
         errorResponse = (await response.json()) as ErrorResponse;
         addErrorMessage(errorResponse.message);
@@ -31,12 +28,11 @@ export const useLogin = () => {
     setIsLoading(false);
 
     return {
-      loginResponse: loginResponse,
       errorResponse: errorResponse,
       status: response.status,
       ok: response.status === 200,
     };
   };
 
-  return { doLogin, isLoading };
+  return { doRegisterUser, isLoading };
 };

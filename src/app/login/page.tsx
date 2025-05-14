@@ -1,19 +1,20 @@
 "use client";
+import { useSnackbar } from "@/components/snackbar/SnackbarProvider";
+import { SESSION_ID } from "@/features/cookies/constants";
 import { useLogin } from "@/features/login/hooks/useLogin";
+import { useRegisterUser } from "@/features/user/hooks/useRegisterUser";
+import { PAGES } from "@/utils/pages";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import MUILink from "@mui/material/Link";
+import { useCookies } from "next-client-cookies";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 export default function Login() {
   const [showRegisterUser, setShowRegisterUser] = useState<boolean>(false);
 
   return (
-    <Box
-      display={"flex"}
-      flexDirection={"column"}
-      alignItems={"center"}
-      marginTop={"5rem"}
-    >
+    <Box display={"flex"} flexDirection={"column"} alignItems={"center"}>
       <Typography variant="h2" marginBottom={"1rem"}>
         Retro Media
       </Typography>
@@ -32,6 +33,9 @@ const RegisterUserForm = ({
 }: {
   setShowRegisterUser: (show: boolean) => void;
 }) => {
+  const { doRegisterUser, isLoading } = useRegisterUser();
+  const { addMessage } = useSnackbar();
+
   const [username, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -49,9 +53,25 @@ const RegisterUserForm = ({
     setShowRegisterUser(false);
   }, [setShowRegisterUser]);
 
-  const registerUser = useCallback(() => {
-    console.log("Register user");
-  }, []);
+  const registerUser = useCallback(async () => {
+    const response = await doRegisterUser({
+      username: username,
+      password: password,
+      confirmNewPassword: confirmPassword,
+    });
+
+    if (response.ok) {
+      addMessage("User created", "success");
+      setShowRegisterUser(false);
+    }
+  }, [
+    addMessage,
+    confirmPassword,
+    doRegisterUser,
+    password,
+    setShowRegisterUser,
+    username,
+  ]);
 
   return (
     <form
@@ -94,6 +114,7 @@ const RegisterUserForm = ({
             variant="contained"
             disabled={!canRegisterNewUser()}
             type="submit"
+            loading={isLoading}
           >
             Register
           </Button>
@@ -109,6 +130,8 @@ const LoginForm = ({
   setShowRegisterUser: (show: boolean) => void;
 }) => {
   const { doLogin, isLoading } = useLogin();
+  const cookies = useCookies();
+  const router = useRouter();
 
   const [username, setUserName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -117,10 +140,14 @@ const LoginForm = ({
     setShowRegisterUser(true);
   }, [setShowRegisterUser]);
 
-  const loginUser = useCallback(() => {
-    const response = doLogin({ username: username, password: password });
-    console.log(response);
-  }, [doLogin, password, username]);
+  const loginUser = useCallback(async () => {
+    const response = await doLogin({ username: username, password: password });
+
+    if (response?.ok && response.loginResponse != null) {
+      cookies.set(SESSION_ID, response.loginResponse.session);
+      router.push(PAGES.HOME);
+    }
+  }, [cookies, doLogin, password, router, username]);
 
   const canLogin = useCallback(() => {
     return username.length > 0 && password.length > 0;
@@ -149,7 +176,12 @@ const LoginForm = ({
           onChange={(e) => setPassword(e.target.value)}
           sx={{ width: "20rem" }}
         />
-        <MUILink component="button" variant="body2" onClick={showRegisterUser}>
+        <MUILink
+          component="button"
+          type="button"
+          variant="body2"
+          onClick={showRegisterUser}
+        >
           Register new user
         </MUILink>
         <Button

@@ -1,24 +1,34 @@
 import { useState } from "react";
-import { LoginRequest, LoginResponse } from "../datatypes";
-import { login } from "../requests";
 import { ErrorResponse } from "@/features/request/dataTypes";
 import { useSnackbar } from "@/components/snackbar/SnackbarProvider";
 import { ERROR_MESSAGES } from "@/features/utils/constants";
+import { getCurrentUser } from "../requests";
+import { useHeader } from "@/app/headerProvider";
+import { UserResponse } from "../dataTypes";
+import { useCookies } from "next-client-cookies";
+import { SESSION_ID } from "@/features/cookies/constants";
 
-export const useLogin = () => {
+export const useGetCurrentUser = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { addErrorMessage } = useSnackbar();
+  const { sessionId } = useHeader();
+  const cookies = useCookies();
 
-  const doLogin = async (body: LoginRequest) => {
+  const doGetCurrentUser = async () => {
+    if (!sessionId) return;
+
     setIsLoading(true);
 
-    const response = await login({ body });
+    const response = await getCurrentUser(sessionId);
 
-    let loginResponse = undefined;
+    let responseObject = undefined;
     let errorResponse = undefined;
 
     if (response.status === 200) {
-      loginResponse = (await response.json()) as LoginResponse;
+      responseObject = (await response.json()) as UserResponse;
+    } else if (response.status === 500) {
+      cookies.remove(SESSION_ID);
+      addErrorMessage("Session expired");
     } else {
       try {
         errorResponse = (await response.json()) as ErrorResponse;
@@ -31,12 +41,12 @@ export const useLogin = () => {
     setIsLoading(false);
 
     return {
-      loginResponse: loginResponse,
+      user: responseObject?.user,
       errorResponse: errorResponse,
       status: response.status,
       ok: response.status === 200,
     };
   };
 
-  return { doLogin, isLoading };
+  return { doGetCurrentUser, isLoading };
 };

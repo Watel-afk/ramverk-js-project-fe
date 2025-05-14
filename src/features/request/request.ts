@@ -12,14 +12,22 @@ export const SendRequest = async ({
   body?: object | undefined;
   sessionId?: string;
 }) => {
-  const response = await fetch(url, {
-    method: method,
-    body: body ? JSON.stringify(body) : undefined,
-    headers: {
-      "Content-Type": "application/json",
-      sessionId: sessionId != null ? sessionId : "",
-    },
-  });
+  try {
+    const response = await fetch(url, {
+      method: method,
+      body: body ? JSON.stringify(body) : undefined,
+      headers: {
+        "Content-Type": "application/json",
+        sessionId: sessionId != null ? sessionId : "",
+      },
+    });
 
-  return response;
+    return response;
+  } catch {
+    return {
+      ok: false,
+      status: 0,
+      json: async () => ({ message: "Server is not reachable" }),
+    } as Response;
+  }
 };

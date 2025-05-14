@@ -5,5 +5,5 @@ export type LoginRequest = {
 
 export type LoginResponse = {
   username: string;
-  sessionId: string;
+  session: string;
 };

@@ -19,8 +19,6 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   >();
 
   const addErrorMessage = (message: string) => {
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaa", message);
-
     setSnackbarMessage({ message: message, severity: "error" });
   };
 
@@ -29,8 +27,6 @@ export const SnackbarProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleClose = () => setSnackbarMessage(undefined);
-
-  console.log("snackbarMessage", snackbarMessage != null);
 
   return (
     <SnackbarContext.Provider value={{ addErrorMessage, addMessage }}>

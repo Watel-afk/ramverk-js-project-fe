@@ -60,7 +60,7 @@ const RegisterUserForm = ({
       confirmNewPassword: confirmPassword,
     });
 
-    if (response.ok) {
+    if (response?.ok) {
       addMessage("User created", "success");
       setShowRegisterUser(false);
     }

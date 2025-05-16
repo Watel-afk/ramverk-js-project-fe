@@ -34,6 +34,7 @@ export const HeaderProvider = ({
     setSessionId(cookieSessionId);
     setIsLoggedIn(loggedIn);
 
+    console.log(loggedIn);
     if (!loggedIn && !UNPROTECTED_PATHS.includes(pathname)) {
       router.push(PAGES.LOGIN);
     }

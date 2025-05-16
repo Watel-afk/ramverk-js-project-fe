@@ -10,11 +10,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
+import { useSnackbar } from "../snackbar/SnackbarProvider";
 
 const UserTab = () => {
   const { doGetCurrentUser, isLoading: getCurrentUserIsLoading } =
     useGetCurrentUser();
   const { doAddBalance, isLoading: addBalanceIsLoading } = useAddBalance();
+  const { addMessage } = useSnackbar();
   const [user, setUser] = useState<User | undefined>(undefined);
   const [balance, setBalance] = useState<number>(user?.balance ?? 0);
 
@@ -37,8 +39,9 @@ const UserTab = () => {
 
     if (response?.ok && response.user) {
       setBalance(response.user?.balance);
+      addMessage("Balance have been added", "success");
     }
-  }, [balance, doAddBalance]);
+  }, [addMessage, balance, doAddBalance]);
 
   return (
     <Box display={"flex"} flexDirection={"column"} gap={"1rem"}>

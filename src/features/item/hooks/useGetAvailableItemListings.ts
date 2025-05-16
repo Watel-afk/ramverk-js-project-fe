@@ -5,30 +5,30 @@ import { ERROR_MESSAGES } from "@/features/utils/constants";
 import { useHeader } from "@/app/headerProvider";
 import { useCookies } from "next-client-cookies";
 import { SESSION_ID } from "@/features/cookies/constants";
-import { getMyItems } from "../requests";
-import { ItemsResponse } from "../dataTypes";
+import { getAvailableListedItems } from "../requests";
+import { ItemListingsResponse } from "../dataTypes";
 import { useRouter } from "next/navigation";
 import { PAGES } from "@/utils/pages";
 
-export const useGetMyItems = () => {
+export const useGetAvailableListedItems = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { addErrorMessage } = useSnackbar();
   const { sessionId } = useHeader();
   const cookies = useCookies();
   const router = useRouter();
 
-  const doGetMyItems = async () => {
+  const doGetAvailableListedItems = async () => {
     if (!sessionId) return;
 
     setIsLoading(true);
 
-    const response = await getMyItems(sessionId);
+    const response = await getAvailableListedItems(sessionId);
 
     let responseObject = undefined;
     let errorResponse = undefined;
 
     if (response.status === 200) {
-      responseObject = (await response.json()) as ItemsResponse;
+      responseObject = (await response.json()) as ItemListingsResponse;
     } else if (response.status === 401) {
       cookies.remove(SESSION_ID);
       addErrorMessage("Session expired");
@@ -46,12 +46,12 @@ export const useGetMyItems = () => {
     setIsLoading(false);
 
     return {
-      items: responseObject?.items,
+      itemListings: responseObject?.itemListings,
       errorResponse: errorResponse,
       status: response.status,
       ok: response.status === 200,
     };
   };
 
-  return { doGetMyItems, isLoading };
+  return { doGetAvailableListedItems, isLoading };
 };

@@ -4,8 +4,10 @@ import { useState } from "react";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ReceiptIcon from "@mui/icons-material/Receipt";
-import UserTab from "@/components/pofile/UserTab";
+import UserTab from "@/components/profile/UserTab";
 import theme from "@/theme/theme";
+import MyItemsTab from "@/components/profile/MyItemsTab";
+import MyItemListingsTab from "@/components/profile/MyItemListingsTab";
 
 function a11yProps(index: number) {
   return {
@@ -65,10 +67,10 @@ export default function Profile() {
           <UserTab />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          Item Two
+          <MyItemsTab />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Item Two
+          <MyItemListingsTab />
         </TabPanel>
       </Box>
     </Container>

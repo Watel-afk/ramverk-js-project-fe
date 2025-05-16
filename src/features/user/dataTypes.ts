@@ -13,6 +13,7 @@ export type UserResponse = {
 };
 
 export type User = {
+  _id: string;
   username: string;
   balance: number;
 };

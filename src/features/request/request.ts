@@ -1,7 +1,7 @@
 import { ValueOf } from "next/dist/shared/lib/constants";
 import { HTTPS_METHODS } from "./dataTypes";
 
-export const SendRequest = async ({
+export const sendRequest = async ({
   url,
   method,
   body,

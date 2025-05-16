@@ -1,16 +1,16 @@
 import { HTTPS_METHODS } from "../request/dataTypes";
 import { API_URL } from "../request/endpoints";
-import { SendRequest } from "../request/request";
+import { sendRequest } from "../request/request";
 import { AddBalanceRequest, RegisterUserRequest } from "./dataTypes";
 
-export const AddBalance = async ({
+export const addBalance = async ({
   sessionId,
   body,
 }: {
   sessionId: string;
   body: AddBalanceRequest;
 }) => {
-  return await SendRequest({
+  return await sendRequest({
     url: API_URL.user.addBalance(),
     method: HTTPS_METHODS.POST,
     body,
@@ -19,7 +19,7 @@ export const AddBalance = async ({
 };
 
 export const getCurrentUser = async (sessionId: string) => {
-  return await SendRequest({
+  return await sendRequest({
     url: API_URL.user.getCurrentUser(),
     method: HTTPS_METHODS.GET,
     sessionId,
@@ -27,7 +27,7 @@ export const getCurrentUser = async (sessionId: string) => {
 };
 
 export const registerUser = async ({ body }: { body: RegisterUserRequest }) => {
-  return await SendRequest({
+  return await sendRequest({
     url: API_URL.user.register(),
     method: HTTPS_METHODS.POST,
     body,

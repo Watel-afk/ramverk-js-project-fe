@@ -14,11 +14,7 @@ export default function Home() {
       </Typography>
       <Typography align="center" variant="body1">
         Here in Retro media you can trade in anything retro. So what are you
-        waiting for get started now. There are currently{" "}
-        <strong>
-          <ins>5</ins>
-        </strong>{" "}
-        items on the market.
+        waiting for get started now.
       </Typography>
       <Box
         display={"flex"}

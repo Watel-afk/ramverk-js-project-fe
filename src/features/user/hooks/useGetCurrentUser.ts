@@ -7,12 +7,15 @@ import { useHeader } from "@/app/headerProvider";
 import { UserResponse } from "../dataTypes";
 import { useCookies } from "next-client-cookies";
 import { SESSION_ID } from "@/features/cookies/constants";
+import { PAGES } from "@/utils/pages";
+import { useRouter } from "next/navigation";
 
 export const useGetCurrentUser = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { addErrorMessage } = useSnackbar();
   const { sessionId } = useHeader();
   const cookies = useCookies();
+  const router = useRouter();
 
   const doGetCurrentUser = async () => {
     if (!sessionId) return;
@@ -26,9 +29,11 @@ export const useGetCurrentUser = () => {
 
     if (response.status === 200) {
       responseObject = (await response.json()) as UserResponse;
-    } else if (response.status === 500) {
+    } else if (response.status === 401) {
       cookies.remove(SESSION_ID);
       addErrorMessage("Session expired");
+      router.push(PAGES.LOGIN);
+      return;
     } else {
       try {
         errorResponse = (await response.json()) as ErrorResponse;

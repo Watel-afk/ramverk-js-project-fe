@@ -20,12 +20,14 @@ import { AccountCircle } from "@mui/icons-material";
 import { useLogout } from "@/features/login/hooks/useLogout";
 import { useGetCurrentUser } from "@/features/user/hooks/useGetCurrentUser";
 import { User } from "@/features/user/dataTypes";
+import { useHeader } from "@/app/headerProvider";
 
 const PAGES = [{ displayName: "Market", address: RouterPages.MARKET }];
 const PROFILE = [
   { displayName: "Profile", address: RouterPages.PROFILE },
   { displayName: "Logout", address: RouterPages.LOGIN },
 ];
+const BASE_WS_URL = process.env.NEXT_PUBLIC_WS_URL;
 
 const Navbar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
@@ -34,6 +36,50 @@ const Navbar = () => {
   const { doLogout } = useLogout();
   const { doGetCurrentUser, isLoading } = useGetCurrentUser();
   const [user, setUser] = useState<User | undefined>(undefined);
+  const { sessionId } = useHeader();
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    let socket: WebSocket | null = null;
+
+    try {
+      const url = `${BASE_WS_URL}?sessionId=${encodeURIComponent(sessionId)}`;
+
+      socket = new WebSocket(url);
+
+      socket.onopen = () => {
+        console.log("WebSocket connected!");
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (
+            data &&
+            data.username === user?.username &&
+            typeof data.balance === "number"
+          ) {
+            setUser((prev) =>
+              prev ? { ...prev, balance: data.balance } : prev
+            );
+          }
+        } catch (err) {
+          console.error("Failed to parse WebSocket message:", err);
+        }
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket disconnected.");
+      };
+    } catch {
+      console.log("failed to connect to websocket");
+    }
+
+    return () => {
+      socket?.close();
+    };
+  }, [sessionId, user?.username]);
 
   useEffect(() => {
     if (user !== undefined || isLoading) return;

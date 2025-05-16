@@ -18,6 +18,8 @@ export const API_URL = {
     getAvailableItemListings: () =>
       getUrl("/item-listings/get-available-item-listings"),
     getMyItemListings: () => getUrl("/item-listings/get-my-item-listings"),
+    removeItemListing: (id: string) =>
+      getUrl("/item-listings/{:id}/remove-item-listing", id),
   },
   user: {
     addBalance: () => getUrl("/users/add-balance"),

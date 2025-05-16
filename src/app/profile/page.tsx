@@ -31,7 +31,7 @@ export default function Profile() {
           flexGrow: 1,
           bgcolor: "background.paper",
           display: "flex",
-          height: "90vh",
+          minHeight: "90vh",
         }}
       >
         <Tabs
